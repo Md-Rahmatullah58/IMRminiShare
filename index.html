@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>IMR SHARE MARKETPLACE</title>
+   <style>
+    /* Global Styles */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: Arial, sans-serif;
+}
+
+/* Header Styles */
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px;
+	background-color: #c5c50a;
+	color: #fff;
+}
+
+nav ul {
+	display: flex;
+	list-style: none;
+}
+
+nav li {
+	margin-left: 30px;
+}
+
+nav a {
+	color: white;
+	text-decoration: none;
+}
+
+nav a:hover {
+	color: #ffc107;
+}
+
+/* Hero Section Styles */
+.hero {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 500px;
+	background-image: url('https://cdn.pixabay.com/photo/2021/03/17/14/18/stock-market-6100355_960_720.jpg');
+	background-size: cover;
+	color: #b82f2f;
+}
+
+.hero h2 {
+	font-size: 3em;
+	margin-bottom: 20px;
+}
+
+.hero p {
+	font-size: 1.5em;
+	margin-bottom: 40px;
+}
+
+.hero a {
+	padding: 10px 30px;
+	border-radius: 20px;
+	background-color: #ffc107;
+	color: #fff;
+	font-weight: bold;
+	text-decoration: none;
+}
+.search-container{
+  padding-top: 15px;
+  border-radius: 30px;
+}
+h2{
+  color: orangered;
+  padding-top: 5px;
+  margin-left: 2px;
+}
+h3{
+  color: blue
+}
+p{
+  color:red;
+  font-size: medium;
+}
+   </style>
+</head>
+<body>
+	<header>
+		<h1>Share Market</h1>
+		<nav>
+			<ul>
+				<li><a href="#">Home</a></li>
+				<li><a href="#">Watchlist</a></li>
+				<li><a href="#">Portfolio</a></li>
+				<li><a href="#">Funds</a></li>
+				<li><a href="#">Contact</a></li>
+				<li><a href="#">LogIn/SignIn</a></li>
+			</ul>
+		</nav>
+	</header>
+  <div class="search-container">
+		<input type="text" placeholder="Search for a Share..." class="search-input">
+		<button type="submit" class="search-button">Search</button>
+	</div>
+	
+	<section class="hero">
+		<h2>Welcome to IMR Share Market</h2>
+		<p>Buy and Sell Shares with Ease</p>
+		<a href="#">Get Started</a>
+	</section>
+		<h2>OUR FEATURES</h2>
+    <hr>
+		<div class="feature-box">
+			<i class="fas fa-chart-line"></i>
+			<h3>Real-Time Market Data</h3>
+			<p>Get up-to-date market data for all Nifty Fifty and Sensex shares.</p>
+		</div>
+		<div class="feature-box">
+			<i class="fas fa-search"></i>
+			<h3>Watchlist</h3>
+			<p>Create your watchlist and track the shares you want to follow.</p>
+		</div>
+		<div class="feature-box">
+			<i class="fas fa-clipboard-list"></i>
+			<h3>Portfolio</h3>
+			<p>Track your holdings and their current value in real-time.</p>
+		</div>
+		<div class="feature-box">
+			<i class="fas fa-money-bill-wave"></i>
+			<h3>Funds</h3>
+			<p>Manage your funds securely and easily.</p>
+		</div>
+    <div id="watchlist-container">
+        <h2>Watchlist</h2>
+        <ul id="watchlist">
+        </ul>
+        <form id="add-stock-form">
+          <input type="text" id="stock-symbol" placeholder="Enter stock symbol" />
+          <button type="submit">Add to Watchlist</button>
+        </form>
+      </div>
+      <div id="order-container">
+        <h2>Order Placement</h2>
+        <form id="order-form">
+          <label for="stock-symbol">Stock Symbol</label>
+          <input type="text" id="stock-symbol" name="stock-symbol" required>
+          <label for="quantity">Quantity</label>
+          <input type="number" id="quantity" name="quantity" required>
+          <label for="order-type">Order Type</label>
+          <select id="order-type" name="order-type" required>
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
+          </select>
+          <button type="submit">Place Order</button>
+        </form>
+      </div>
+      <div id="portfolio-container">
+        <h2>My Portfolio</h2>
+        <table id="portfolio-table">
+          <thead>
+            <tr>
+              <th>Stock Symbol</th>
+              <th>Quantity</th>
+              <th>Current Price</th>
+              <th>Total Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Portfolio table rows will be added dynamically using JavaScript -->
+          </tbody>
+        </table>
+      </div>
+      <div id="fund-management-container">
+        <h2>Fund Management</h2>
+        <form id="deposit-form">
+          <label for="deposit-amount">Deposit Amount:</label>
+          <input type="number" id="deposit-amount" name="deposit-amount" required>
+          <button type="submit">Deposit</button>
+        </form>
+        <form id="withdraw-form">
+          <label for="withdraw-amount">Withdraw Amount:</label>
+          <input type="number" id="withdraw-amount" name="withdraw-amount" required>
+          <button type="submit">Withdraw</button>
+        </form>
+      </div>
+      <script>
+        // Yahoo Finance API URL to fetch market data for Nifty Fifty and Sensex shares
+const API_URL = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=NIFTY50.NS,^BSESN';
+
+// Function to fetch market data from Yahoo Finance API
+async function getMarketData() {
+	try {
+		const response = await fetch(API_URL);
+		const data = await response.json();
+		return data.quoteResponse.result;
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+// Function to display market data on the website
+function displayMarketData() {
+	getMarketData()
+		.then(data => {
+			const marketDataContainer = document.querySelector('#market-data-container');
+			marketDataContainer.innerHTML = '';
+
+			data.forEach(stock => {
+				const stockData = `
+					<div class="stock">
+						<h3>${stock.shortName}</h3>
+						<p><strong>Symbol:</strong> ${stock.symbol}</p>
+						<p><strong>Price:</strong> ${stock.regularMarketPrice.toFixed(2)}</p>
+						<p><strong>Change:</strong> ${stock.regularMarketChange.toFixed(2)} (${((stock.regularMarketChangePercent)*100).toFixed(2)}%)</p>
+					</div>
+				`;
+				marketDataContainer.innerHTML += stockData;
+			});
+		})
+		.catch(error => console.error(error));
+}
+
+// Call the displayMarketData function to show market data on the website
+displayMarketData();
+const watchlist = [];
+
+// Get form and input element
+const form = document.querySelector('#add-stock-form');
+const input = document.querySelector('#stock-symbol');
+
+// Function to add a stock to the watchlist
+function addToWatchlist(event) {
+  event.preventDefault();
+  const stockSymbol = input.value.toUpperCase();
+  input.value = '';
+
+  // Check if the stock symbol is already in the watchlist
+  if (watchlist.includes(stockSymbol)) {
+    alert('This stock is already in your watchlist!');
+    return;
+  }
+
+  // Add stock symbol to the watchlist
+  watchlist.push(stockSymbol);
+
+  // Update the watchlist on the webpage
+  const watchlistElement = document.querySelector('#watchlist');
+  const stockElement = document.createElement('li');
+  stockElement.innerText = stockSymbol;
+  watchlistElement.appendChild(stockElement);
+}
+
+// Function to remove a stock from the watchlist
+function removeFromWatchlist(event) {
+  const stockSymbol = event.target.innerText;
+  const stockIndex = watchlist.indexOf(stockSymbol);
+
+  if (stockIndex > -1) {
+    // Remove stock symbol from the watchlist
+    watchlist.splice(stockIndex, 1);
+
+    // Update the watchlist on the webpage
+    event.target.remove();
+  }
+}
+
+// Add event listeners to the form and watchlist
+form.addEventListener('submit', addToWatchlist);
+document.querySelector('#watchlist').addEventListener('click', removeFromWatchlist);
+// Get form and input elements
+const orderForm = document.querySelector('#order-form');
+const stockSymbolInput = document.querySelector('#stock-symbol');
+const quantityInput = document.querySelector('#quantity');
+const orderTypeInput = document.querySelector('#order-type');
+
+// Function to place an order
+function placeOrder(event) {
+  event.preventDefault();
+  const stockSymbol = stockSymbolInput.value.toUpperCase();
+  const quantity = parseInt(quantityInput.value);
+  const orderType = orderTypeInput.value;
+
+  // Execute order through the API
+  // Here, we assume that we have a function named 'executeOrder' that takes the order details as parameters and executes the order through the API.
+  executeOrder(stockSymbol, quantity, orderType);
+
+  // Reset the form after submission
+  orderForm.reset();
+}
+
+// Add event listener to the form
+orderForm.addEventListener('submit', placeOrder);
+// Define an object to store the user's portfolio
+const portfolio = {};
+
+// Function to update the portfolio table
+function updatePortfolioTable() {
+  const tableBody = document.querySelector('#portfolio-table tbody');
+  tableBody.innerHTML = '';
+
+  let totalPortfolioValue = 0;
+
+  // Loop through each stock in the portfolio
+  for (const stockSymbol in portfolio) {
+    // Get the current price of the stock through the API
+    // Here, we assume that we have a function named 'getStockPrice' that takes the stock symbol as a parameter and returns its current price.
+    const stockPrice = getStockPrice(stockSymbol);
+
+    // Calculate the total value of the stock
+    const quantity = portfolio[stockSymbol];
+    const stockValue = stockPrice * quantity;
+
+    // Add a row to the portfolio table
+    const tableRow = document.createElement('tr');
+    tableRow.innerHTML = `
+      <td>${stockSymbol}</td>
+      <td>${quantity}</td>
+      <td>${stockPrice}</td>
+      <td>${stockValue}</td>
+    `;
+    tableBody.appendChild(tableRow);
+
+    // Add the stock value to the total portfolio value
+    totalPortfolioValue += stockValue;
+  }
+
+  // Update the total portfolio value in the HTML
+  const totalValueElement = document.querySelector('#total-portfolio-value');
+  totalValueElement.textContent = totalPortfolioValue;
+}
+
+// Function to update the portfolio
+function updatePortfolio() {
+  // Loop through each stock in the portfolio
+  for (const stockSymbol in portfolio) {
+    // Get the current price of the stock through the API
+    // Here, we assume that we have a function named 'getStockPrice' that takes the stock symbol as a parameter and returns its current price.
+    const stockPrice = getStockPrice(stockSymbol);
+
+    // Calculate the total value of the stock
+    const quantity = portfolio[stockSymbol];
+    const stockValue = stockPrice * quantity;
+
+    // Update the portfolio object with the new stock value
+    portfolio[stockSymbol] = {
+      quantity,
+      price: stockPrice,
+      value: stockValue
+    };
+  }
+
+  // Update the portfolio table
+  updatePortfolioTable();
+}
+
+// Call the updatePortfolio function at regular intervals (e.g., every 30 seconds)
+setInterval(updatePortfolio, 30000);
+// Initialize the Stripe API with your API key
+const stripe = Stripe('YOUR_STRIPE_API_KEY');
+
+// Function to handle form submission for depositing funds
+async function handleDepositFormSubmission(event) {
+  event.preventDefault();
+  
+  const depositAmount = parseFloat(document.querySelector('#deposit-amount').value);
+  
+  // Create a PaymentIntent on the server
+  const response = await fetch('/create-payment-intent', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      amount: depositAmount * 100 // Stripe requires the amount to be in cents
+    })
+  });
+  
+  const { clientSecret } = await response.json();
+  
+  // Confirm the PaymentIntent with the user's payment details
+  const result = await stripe.confirmCardPayment(clientSecret, {
+    payment_method: {
+      card: {
+        // Collect the user's payment details here
+      }
+    }
+  });
+  
+  if (result.error) {
+    // Show an error message to the user
+  } else {
+    // Deposit successful, update the user's account balance and display a success message
+  }
+}
+
+// Function to handle form submission for withdrawing funds
+async function handleWithdrawFormSubmission(event) {
+  event.preventDefault();
+  
+  const withdrawAmount = parseFloat(document.querySelector('#withdraw-amount').value);
+  
+  // Create a PaymentIntent on the server
+  const response = await fetch('/create-payment-intent', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      amount: -withdrawAmount * 100 // Use a negative amount for withdrawals
+    })
+  });
+  
+  const { clientSecret } = await response.json();
+  
+  // Confirm the PaymentIntent with the user's payment details
+  const result = await stripe.confirmCardPayment(clientSecret, {
+    payment_method: {
+      card: {
+        // Collect the user's payment details here
+      }
+    }
+  });
+  
+  if (result.error) {
+    // Show an error message to the user
+  } else {
+    // Withdrawal successful, update the user's account balance and display a success message
+  }
+}
+
+// Add event listeners to the deposit and withdraw forms
+const depositForm = document.querySelector('#deposit-form');
+depositForm.addEventListener('submit', handleDepositFormSubmission);
+
+const withdrawForm = document.querySelector('#withdraw-form');
+withdrawForm.addEventListener('submit', handleWithdrawFormSubmission);
+</script>
+	<footer>
+		<p>&copy; 2023 IMR Share Market Website. All rights reserved.</p>
+	</footer>
+
+</body>
+</html>
